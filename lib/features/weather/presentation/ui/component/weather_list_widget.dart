@@ -47,7 +47,6 @@ class WeatherItem extends StatelessWidget {
         title:
         Text(toDo.title, style: Styles.getStringDeco(toDo.isComplete),),
 
-
       ),
     );
   }
