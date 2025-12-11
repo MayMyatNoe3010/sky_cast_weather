@@ -19,7 +19,7 @@ class AsyncDataHandler<T> extends ConsumerWidget {
             (data is Map && data.isEmpty) ||
             (data is String && data.isEmpty);
         if (data == null || isEmpty) {
-        return NoTaskWidget();
+        return Container();//NoTaskWidget();
       }
 
       return onData(context, data);

@@ -1,51 +1,55 @@
 import 'dart:async';
-import 'dart:developer';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../../core/services/dio_client.dart';
+import '../../data/service/weather_service.dart';
 import '../../domain/entities/weather.dart';
-final weatherProvider = StateNotifierProvider<WeatherNotifier, AsyncValue<List<Weather>>>((ref) => WeatherNotifier());
-class WeatherNotifier extends StateNotifier<AsyncValue<List<Weather>>> {
-  WeatherNotifier() : super(const AsyncLoading());
+final dioClientProvider = Provider<DioClient>((ref) {
+  return DioClient();
+});
+final weatherServiceProvider = Provider<WeatherService>((ref) {
+  final dio = ref.read(dioClientProvider);
+  return WeatherService(dio);
 
-  Future<void> getWeathers(String date) async {
-    print('GetWeather');
-    state = const AsyncLoading();
-    final userId = _client.getUserId();
-    if (userId == null) {
-      state = const AsyncValue.data([]);
-      return;
-    }
+});
 
+final weatherProvider =
+AsyncNotifierProvider<WeatherNotifier, List<Weather>>(
+    WeatherNotifier.new);
 
+class WeatherNotifier extends AsyncNotifier<List<Weather>> {
+  late final WeatherService _service;
+
+  @override
+  FutureOr<List<Weather>> build() async {
+    _service = ref.read(weatherServiceProvider);
+    return await fetchWeathers();
+  }
+  Future<void> fetchWeather(String city) async {
+    state = const AsyncValue.loading();
     try {
-      //final result = await _client.fetchTodos(userId, date);
-      final List<Weather> weathers = [];//(result as List).map((e) => WeatherDto.fromJson(e).toDomain()).toList();
-      state = AsyncValue.data(weathers);
+      final data = await _service.getWeathers(city);
+      state = AsyncValue.data(data);
     } catch (e, st) {
       state = AsyncValue.error(e, st);
     }
-    print(state);
   }
 
-  Future<void> addWeather(Weather weather) async {
-    final userId = _client.getUserId();
-    if (userId == null) return;
-    final dto = weather.toDto(userId);
-    final result = await _client.addTodo(dto);
-    state = state.whenData((weathers) => [...weathers, result.toDomain()]);
+
+  Future<List<Weather>> fetchWeathers([String? date]) async {
+    state = const AsyncValue.loading();
+
+    try {
+      final weathers = await _service.getWeathers();
+      state = AsyncValue.data(weathers);
+      return weathers;
+    } catch (e, st) {
+      state = AsyncValue.error(e, st);
+      return [];
+    }
   }
 
-  Future<void> toggleComplete(int weatherId) async {
-    final currentState = state;
-    if (currentState is! AsyncData) return;
-
-    final weathers = currentState.value;
-    final weather = weathers?.firstWhere((t) => t.id == weatherId);
-    final updatedWeather = weather?.copyWith(isComplete: !weather.isComplete);
-    if(updatedWeather != null){
-    await _client.toggleIsComplete(updatedWeather);
-
-    final updatedList = weathers?.map((t) => t.id == weatherId ? updatedWeather : t).toList();
-    state = AsyncValue.data(updatedList!);}
-
+  Future<void> getWeathers(String date) async {
+    await fetchWeathers(date);
   }
 }

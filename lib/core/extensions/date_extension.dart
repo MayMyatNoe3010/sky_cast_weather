@@ -1,5 +1,5 @@
 import 'package:intl/intl.dart';
-import 'package:timezone/timezone.dart' as tz;
+//import 'package:timezone/timezone.dart' as tz;
 
 extension DateExtension on DateTime{
   int getDateDifference(DateTime date) {
@@ -24,11 +24,11 @@ extension DateExtension on DateTime{
 
     return dateTimeList;
   }
-  tz.TZDateTime getTZTime(int minBefore){
-
-    final tzDateTime = tz.TZDateTime.from(this, tz.local);
-    return tzDateTime.subtract(Duration(seconds: 10));//minutes: minBefore));
-
-  }
+  // tz.TZDateTime getTZTime(int minBefore){
+  //
+  //   final tzDateTime = tz.TZDateTime.from(this, tz.local);
+  //   return tzDateTime.subtract(Duration(seconds: 10));//minutes: minBefore));
+  //
+  // }
 
 }

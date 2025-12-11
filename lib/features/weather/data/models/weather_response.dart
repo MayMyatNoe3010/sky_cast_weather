@@ -1,151 +1,306 @@
-import 'package:freezed_annotation/freezed_annotation.dart';
-part 'weather_data.freezed.dart';
-part 'weather_data.g.dart';
+import 'package:json_annotation/json_annotation.dart';
 
-@freezed
-class WeatherResponse with _$WeatherResponse {
-  const factory WeatherResponse({
-    required double lat,
-    required double lon,
-    required String timezone,
-    @JsonKey(name: 'timezone_offset') required int timezoneOffset,
-    required CurrentWeather current,
-    required List<Minutely> minutely,
-    required List<Hourly> hourly,
-    required List<Daily> daily,
-    List<Alert>? alerts,
-  }) = _WeatherResponse;
+part 'weather_response.g.dart';
+
+@JsonSerializable(explicitToJson: true)
+class WeatherResponse {
+  final double? lat;
+  final double? lon;
+  final String? timezone;
+
+  @JsonKey(name: 'timezone_offset')
+  final int? timezoneOffset;
+
+  final CurrentWeatherResponse? current;
+  final List<MinutelyResponse>? minutely;
+  final List<HourlyResponse>? hourly;
+  final List<DailyResponse>? daily;
+  final List<AlertResponse>? alerts;
+
+  WeatherResponse({
+    this.lat,
+    this.lon,
+    this.timezone,
+    this.timezoneOffset,
+    this.current,
+    this.minutely,
+    this.hourly,
+    this.daily,
+    this.alerts,
+  });
 
   factory WeatherResponse.fromJson(Map<String, dynamic> json) =>
       _$WeatherResponseFromJson(json);
-}
-@freezed
-class CurrentWeather with _$CurrentWeather {
-  const factory CurrentWeather({
-    required int dt,
-    required int sunrise,
-    required int sunset,
-    required double temp,
-    @JsonKey(name: 'feels_like') required double feelsLike,
-    required int pressure,
-    required int humidity,
-    @JsonKey(name: 'dew_point') required double dewPoint,
-    required double uvi,
-    required int clouds,
-    required int visibility,
-    @JsonKey(name: 'wind_speed') required double windSpeed,
-    @JsonKey(name: 'wind_deg') required int windDeg,
-    @JsonKey(name: 'wind_gust') double? windGust, // Added as optional
-    required List<WeatherDetail> weather,
-  }) = _CurrentWeather;
 
-  factory CurrentWeather.fromJson(Map<String, dynamic> json) =>
-      _$CurrentWeatherFromJson(json);
+  Map<String, dynamic> toJson() => _$WeatherResponseToJson(this);
 }
-@freezed
-class Minutely with _$Minutely {
-  const factory Minutely({required int dt, required double precipitation}) =
-      _Minutely;
+@JsonSerializable(explicitToJson: true)
+class CurrentWeatherResponse {
+  final int? dt;
+  final int? sunrise;
+  final int? sunset;
+  final double? temp;
 
-  factory Minutely.fromJson(Map<String, dynamic> json) =>
-      _$MinutelyFromJson(json);
+  @JsonKey(name: 'feels_like')
+  final double? feelsLike;
+
+  final int? pressure;
+  final int? humidity;
+
+  @JsonKey(name: 'dew_point')
+  final double? dewPoint;
+
+  final double? uvi;
+  final int? clouds;
+  final int? visibility;
+
+  @JsonKey(name: 'wind_speed')
+  final double? windSpeed;
+
+  @JsonKey(name: 'wind_deg')
+  final int? windDeg;
+
+  @JsonKey(name: 'wind_gust')
+  final double? windGust;
+
+  final List<WeatherDetailResponse>? weather;
+
+  CurrentWeatherResponse({
+    this.dt,
+    this.sunrise,
+    this.sunset,
+    this.temp,
+    this.feelsLike,
+    this.pressure,
+    this.humidity,
+    this.dewPoint,
+    this.uvi,
+    this.clouds,
+    this.visibility,
+    this.windSpeed,
+    this.windDeg,
+    this.windGust,
+    this.weather,
+  });
+
+  factory CurrentWeatherResponse.fromJson(Map<String, dynamic> json) =>
+      _$CurrentWeatherResponseFromJson(json);
+
+  Map<String, dynamic> toJson() => _$CurrentWeatherResponseToJson(this);
 }
-@freezed
-class Hourly with _$Hourly {
-  const factory Hourly({
-    required int dt,
-    required double temp,
-    @JsonKey(name: 'feels_like') required double feelsLike,
-    required int pressure,
-    required int humidity,
-    @JsonKey(name: 'dew_point') required double dewPoint,
-    required double uvi,
-    required int clouds,
-    required int visibility,
-    @JsonKey(name: 'wind_speed') required double windSpeed,
-    @JsonKey(name: 'wind_deg') required int windDeg,
-    @JsonKey(name: 'wind_gust') double? windGust,
-    required List<WeatherDetail> weather,
-    required double pop, // Probability of Precipitation
-  }) = _Hourly;
+@JsonSerializable()
+class MinutelyResponse {
+  final int? dt;
+  final double? precipitation;
 
-  factory Hourly.fromJson(Map<String, dynamic> json) => _$HourlyFromJson(json);
+  MinutelyResponse({this.dt, this.precipitation});
+
+  factory MinutelyResponse.fromJson(Map<String, dynamic> json) =>
+      _$MinutelyResponseFromJson(json);
+
+  Map<String, dynamic> toJson() => _$MinutelyResponseToJson(this);
 }
-@freezed
-class Daily with _$Daily {
-  const factory Daily({
-    required int dt,
-    required int sunrise,
-    required int sunset,
-    required int moonrise,
-    required int moonset,
-    @JsonKey(name: 'moon_phase') required double moonPhase,
-    required String summary,
-    required Temperature temp,
-    @JsonKey(name: 'feels_like') required FeelsLike feelsLike,
-    required int pressure,
-    required int humidity,
-    @JsonKey(name: 'dew_point') required double dewPoint,
-    @JsonKey(name: 'wind_speed') required double windSpeed,
-    @JsonKey(name: 'wind_deg') required int windDeg,
-    @JsonKey(name: 'wind_gust') double? windGust,
-    required List<WeatherDetail> weather,
-    required int clouds,
-    required double pop,
-    double? rain, // Rain is optional/nullable
-    required double uvi,
-  }) = _Daily;
+@JsonSerializable(explicitToJson: true)
+class HourlyResponse {
+  final int? dt;
+  final double? temp;
 
-  factory Daily.fromJson(Map<String, dynamic> json) => _$DailyFromJson(json);
+  @JsonKey(name: 'feels_like')
+  final double? feelsLike;
+
+  final int? pressure;
+  final int? humidity;
+
+  @JsonKey(name: 'dew_point')
+  final double? dewPoint;
+
+  final double? uvi;
+  final int? clouds;
+  final int? visibility;
+
+  @JsonKey(name: 'wind_speed')
+  final double? windSpeed;
+
+  @JsonKey(name: 'wind_deg')
+  final int? windDeg;
+
+  @JsonKey(name: 'wind_gust')
+  final double? windGust;
+
+  final List<WeatherDetailResponse>? weather;
+  final double? pop;
+
+  HourlyResponse({
+    this.dt,
+    this.temp,
+    this.feelsLike,
+    this.pressure,
+    this.humidity,
+    this.dewPoint,
+    this.uvi,
+    this.clouds,
+    this.visibility,
+    this.windSpeed,
+    this.windDeg,
+    this.windGust,
+    this.weather,
+    this.pop,
+  });
+
+  factory HourlyResponse.fromJson(Map<String, dynamic> json) =>
+      _$HourlyResponseFromJson(json);
+
+  Map<String, dynamic> toJson() => _$HourlyResponseToJson(this);
 }
-@freezed
-class Temperature with _$Temperature {
-  const factory Temperature({
-    required double day,
-    required double min,
-    required double max,
-    required double night,
-    required double eve,
-    required double morn,
-  }) = _Temperature;
+@JsonSerializable(explicitToJson: true)
+class DailyResponse {
+  final int? dt;
+  final int? sunrise;
+  final int? sunset;
+  final int? moonrise;
+  final int? moonset;
 
-  factory Temperature.fromJson(Map<String, dynamic> json) =>
-      _$TemperatureFromJson(json);
+  @JsonKey(name: 'moon_phase')
+  final double? moonPhase;
+
+  final String? summary;
+  final TemperatureResponse? temp;
+
+  @JsonKey(name: 'feels_like')
+  final FeelsLikeResponse? feelsLike;
+
+  final int? pressure;
+  final int? humidity;
+
+  @JsonKey(name: 'dew_point')
+  final double? dewPoint;
+
+  @JsonKey(name: 'wind_speed')
+  final double? windSpeed;
+
+  @JsonKey(name: 'wind_deg')
+  final int? windDeg;
+
+  @JsonKey(name: 'wind_gust')
+  final double? windGust;
+
+  final List<WeatherDetailResponse>? weather;
+  final int? clouds;
+  final double? pop;
+  final double? rain;
+  final double? uvi;
+
+  DailyResponse({
+    this.dt,
+    this.sunrise,
+    this.sunset,
+    this.moonrise,
+    this.moonset,
+    this.moonPhase,
+    this.summary,
+    this.temp,
+    this.feelsLike,
+    this.pressure,
+    this.humidity,
+    this.dewPoint,
+    this.windSpeed,
+    this.windDeg,
+    this.windGust,
+    this.weather,
+    this.clouds,
+    this.pop,
+    this.rain,
+    this.uvi,
+  });
+
+  factory DailyResponse.fromJson(Map<String, dynamic> json) =>
+      _$DailyResponseFromJson(json);
+
+  Map<String, dynamic> toJson() => _$DailyResponseToJson(this);
 }
-@freezed
-class FeelsLike with _$FeelsLike {
-  const factory FeelsLike({
-    required double day,
-    required double night,
-    required double eve,
-    required double morn,
-  }) = _FeelsLike;
+@JsonSerializable()
+class TemperatureResponse {
+  final double? day;
+  final double? min;
+  final double? max;
+  final double? night;
+  final double? eve;
+  final double? morn;
 
-  factory FeelsLike.fromJson(Map<String, dynamic> json) =>
-      _$FeelsLikeFromJson(json);
+  TemperatureResponse({
+    this.day,
+    this.min,
+    this.max,
+    this.night,
+    this.eve,
+    this.morn,
+  });
+
+  factory TemperatureResponse.fromJson(Map<String, dynamic> json) =>
+      _$TemperatureResponseFromJson(json);
+
+  Map<String, dynamic> toJson() => _$TemperatureResponseToJson(this);
 }
-@freezed
-class WeatherDetail with _$WeatherDetail {
-  const factory WeatherDetail({
-    required int id,
-    required String main,
-    required String description,
-    required String icon,
-  }) = _WeatherDetail;
+@JsonSerializable()
+class FeelsLikeResponse {
+  final double? day;
+  final double? night;
+  final double? eve;
+  final double? morn;
 
-  factory WeatherDetail.fromJson(Map<String, dynamic> json) =>
-      _$WeatherDetailFromJson(json);
+  FeelsLikeResponse({
+    this.day,
+    this.night,
+    this.eve,
+    this.morn,
+  });
+
+  factory FeelsLikeResponse.fromJson(Map<String, dynamic> json) =>
+      _$FeelsLikeResponseFromJson(json);
+
+  Map<String, dynamic> toJson() => _$FeelsLikeResponseToJson(this);
 }
-@freezed
-class Alert with _$Alert {
-  const factory Alert({
-    @JsonKey(name: 'sender_name') required String senderName,
-    required String event,
-    required int start,
-    required int end,
-    required String description,
-    required List<String> tags,
-  }) = _Alert;
+@JsonSerializable()
+class WeatherDetailResponse {
+  final int? id;
+  final String? main;
+  final String? description;
+  final String? icon;
 
-  factory Alert.fromJson(Map<String, dynamic> json) => _$AlertFromJson(json);
+  WeatherDetailResponse({
+    this.id,
+    this.main,
+    this.description,
+    this.icon,
+  });
+
+  factory WeatherDetailResponse.fromJson(Map<String, dynamic> json) =>
+      _$WeatherDetailResponseFromJson(json);
+
+  Map<String, dynamic> toJson() => _$WeatherDetailResponseToJson(this);
+}
+@JsonSerializable()
+class AlertResponse {
+  @JsonKey(name: 'sender_name')
+  final String? senderName;
+
+  final String? event;
+  final int? start;
+  final int? end;
+  final String? description;
+  final List<String>? tags;
+
+  AlertResponse({
+    this.senderName,
+    this.event,
+    this.start,
+    this.end,
+    this.description,
+    this.tags,
+  });
+
+  factory AlertResponse.fromJson(Map<String, dynamic> json) =>
+      _$AlertResponseFromJson(json);
+
+  Map<String, dynamic> toJson() => _$AlertResponseToJson(this);
 }

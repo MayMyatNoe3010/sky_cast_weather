@@ -4,6 +4,7 @@ import 'dart:developer';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:lottie/lottie.dart';
 import '../../../../../core/base_widgets/async_data_handler.dart';
 import '../../../../../core/res/dimensions.dart';
 import '../../../domain/entities/weather.dart';
@@ -21,12 +22,7 @@ class HomePage extends ConsumerStatefulWidget {
 class _HomePageState extends ConsumerState<HomePage> {
   @override
   void initState() {
-    // TODO: implement initState
-    super.initState();
-    print('Init');
-    Future.microtask(() {
-      ref.read(weatherProvider.notifier).getTasks(DateTime.now().toString());
-    });
+
   }
 
   @override
