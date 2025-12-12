@@ -1,17 +1,24 @@
+import 'dart:convert';
+
 import 'package:sky_cast_weather/core/services/dio_client.dart';
+import 'package:sky_cast_weather/core/services/geo_location_service.dart';
+import 'package:sky_cast_weather/core/utils/api_costants.dart';
 import 'package:sky_cast_weather/core/utils/constants.dart';
 import 'package:sky_cast_weather/features/weather/data/mappers/weather_mapper.dart';
+import 'package:sky_cast_weather/features/weather/data/models/forecast_response.dart';
 import 'package:sky_cast_weather/features/weather/data/models/weather_response.dart';
+import 'package:sky_cast_weather/features/weather/domain/entities/forecast.dart';
 
 import '../../../../core/extensions/date_extension.dart';
 import '../../domain/entities/weather.dart';
+typedef LatLong = ({double lat, double lon});
 
 class WeatherService{
   final DioClient dioClient;
   WeatherService(this.dioClient);
-  Future<Map<String, double>> getCityCoordinates(String city) async {
+  Future<LatLong> getCityCoordinates(String city) async {
     final response = await dioClient.get(
-      'geo/1.0/direct',
+      APIConstants.geoLocation,
       queryParams: {
         'q': city,
         'limit': 1,
@@ -24,19 +31,30 @@ class WeatherService{
     }
 
     final data = response.data[0];
-    return {
-      'lat': (data['lat'] as num).toDouble(),
-      'lon': (data['lon'] as num).toDouble(),
+    return toLatLon((data['lat'] as num).toDouble(), (data['lon'] as num).toDouble());
+  }
+
+  Future<Forecast> getWeathers([String? city]) async {
+    LatLong cityPosition = (lat: 0, lon: 0);
+    if(city == null || city == ''){
+      final position = await GeoLocationService.determinePosition();
+      cityPosition = toLatLon(position.latitude, position.longitude);//{'lat': position.latitude, 'lon' : position.longitude};
+    }else{
+      cityPosition = await getCityCoordinates(city);
+    }
+    print('CityPosition: $cityPosition');
+
+    final queryParams = {
+      'lat': cityPosition.lat,
+      'lon': cityPosition.lon,
+      'cnt': 7,
+      'appid': Constants.OPENWEATHER_APIKEY,
     };
+    final response = await dioClient.get(APIConstants.getForecast, queryParams: queryParams);
+    print('Response: $response');
+    return ForecastResponse.fromJson((jsonDecode(response.toString()))).toDomain();
   }
-
-  Future<List<Weather>> getWeathers([String? date]) async {
-
-    final response = await dioClient.get('${date ?? DateTime.now().getWithoutTimeString()}');
-
-    return (response.data as List)
-        .map((e) => WeatherResponse.fromJson(e).toDomainModel())
-        .toList();
+  LatLong toLatLon(double lat, double long){
+    return (lat: lat, lon: long);
   }
-
 }

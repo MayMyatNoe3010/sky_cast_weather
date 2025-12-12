@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:sky_cast_weather/features/weather/domain/entities/forecast_item.dart';
 
 import '../../../../core/services/dio_client.dart';
 import '../../data/service/weather_service.dart';
@@ -14,35 +15,37 @@ final weatherServiceProvider = Provider<WeatherService>((ref) {
 });
 
 final weatherProvider =
-AsyncNotifierProvider<WeatherNotifier, List<Weather>>(
+AsyncNotifierProvider<WeatherNotifier, List<ForecastItem>>(
     WeatherNotifier.new);
 
-class WeatherNotifier extends AsyncNotifier<List<Weather>> {
+class WeatherNotifier extends AsyncNotifier<List<ForecastItem>> {
   late final WeatherService _service;
 
   @override
-  FutureOr<List<Weather>> build() async {
+  FutureOr<List<ForecastItem>> build() async {
     _service = ref.read(weatherServiceProvider);
-    return await fetchWeathers();
+    return await fetchWeather('');
   }
-  Future<void> fetchWeather(String city) async {
+  Future<List<ForecastItem>> fetchWeather(String city) async {
     state = const AsyncValue.loading();
     try {
       final data = await _service.getWeathers(city);
-      state = AsyncValue.data(data);
+      state = AsyncValue.data(data.items);
+      return data.items;
     } catch (e, st) {
       state = AsyncValue.error(e, st);
+      return [];
     }
   }
 
 
-  Future<List<Weather>> fetchWeathers([String? date]) async {
+  Future<List<ForecastItem>> fetchWeathers([String? date]) async {
     state = const AsyncValue.loading();
 
     try {
       final weathers = await _service.getWeathers();
-      state = AsyncValue.data(weathers);
-      return weathers;
+      state = AsyncValue.data(weathers.items);
+      return weathers.items;
     } catch (e, st) {
       state = AsyncValue.error(e, st);
       return [];

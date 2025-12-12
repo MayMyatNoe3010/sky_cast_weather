@@ -1,4 +1,4 @@
 final class AppRoutes{
-  static  const home = '/home';
-  static const newTask = '/new_task';
+  static  const initial = '/';
+  static const search = '/search';
 }
