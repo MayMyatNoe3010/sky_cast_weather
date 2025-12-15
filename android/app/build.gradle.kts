@@ -1,3 +1,14 @@
+import java.io.FileInputStream
+import java.util.Properties
+
+// Load the key.properties file from the 'android' directory
+val keystoreProperties = Properties()
+val keystorePropertiesFile = rootProject.file("key.properties")
+if (keystorePropertiesFile.exists()) {
+    keystoreProperties.load(FileInputStream(keystorePropertiesFile))
+}
+// -----------------------------------------------------------
+
 plugins {
     id("com.android.application")
     id("kotlin-android")
@@ -30,11 +41,30 @@ android {
         versionName = flutter.versionName
     }
 
+    // 2. Correct way to define signingConfigs in Kotlin DSL
+    signingConfigs {
+        // Use 'create' to define the 'release' signing configuration
+        create("release") {
+            storeFile = file(keystoreProperties.getProperty("storeFile"))
+            storePassword = keystoreProperties.getProperty("storePassword")
+            keyAlias = keystoreProperties.getProperty("keyAlias")
+            keyPassword = keystoreProperties.getProperty("keyPassword")
+        }
+    }
+
+    // 3. Apply the 'release' signing config to the 'release' buildType
     buildTypes {
         release {
-            // TODO: Add your own signing config for the release build.
-            // Signing with the debug keys for now, so `flutter run --release` works.
-            signingConfig = signingConfigs.getByName("debug")
+            // Apply the custom signing configuration defined above
+            signingConfig = signingConfigs.getByName("release")
+
+            // Optional but Recommended for Production Builds:
+            isMinifyEnabled = true
+            isShrinkResources = true
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
         }
     }
 }

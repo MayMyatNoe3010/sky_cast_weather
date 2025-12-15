@@ -9,7 +9,7 @@
 // import '../../../../../core/res/dimensions.dart';
 // import '../../../domain/entities/weather.dart';
 // import '../../providers/weather_provider.dart';
-// import '../component/weather_list_widget.dart';
+// import '../component/weather_list_item_widget.dart';
 // import '../component/user_info_widget.dart';
 //
 // class HomePage extends ConsumerStatefulWidget {

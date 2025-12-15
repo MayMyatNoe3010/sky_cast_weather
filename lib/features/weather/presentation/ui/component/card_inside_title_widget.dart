@@ -11,10 +11,8 @@ class CardInsideTitleWidget extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: Dimensions.paddingS),
       child: Column(
-        // Optional: Align the column contents to the start (left)
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-
           Text(
             title,
             style: Theme.of(context).textTheme.bodyLarge,
