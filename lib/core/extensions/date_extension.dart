@@ -2,6 +2,11 @@ import 'package:intl/intl.dart';
 //import 'package:timezone/timezone.dart' as tz;
 
 extension DateExtension on DateTime{
+  String getHourOnlyString(){
+    final formatter = DateFormat('hh a');
+    return formatter.format(this);
+
+  }
   int getDateDifference(DateTime date) {
     return DateTime(this.year, this.month, this.day)
         .difference(DateTime(date.year, date.month, date.day))
