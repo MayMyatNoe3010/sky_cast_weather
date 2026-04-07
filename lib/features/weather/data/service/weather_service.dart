@@ -14,7 +14,11 @@ import '../../../../core/extensions/date_extension.dart';
 import '../../domain/entities/weather.dart';
 typedef LatLong = ({double lat, double lon});
 
-class WeatherService{
+abstract class IWeatherService {
+  Future<Forecast> getTodayWeatherDetail([String? city]);
+}
+
+class WeatherService implements IWeatherService {
   final openWeatherApiKey = dotenv.env['OPENWEATHER_APIKEY'];
   final DioClient dioClient;
   WeatherService(this.dioClient);
@@ -36,6 +40,7 @@ class WeatherService{
     return toLatLon((data['lat'] as num).toDouble(), (data['lon'] as num).toDouble());
   }
 
+  @override
   Future<Forecast> getTodayWeatherDetail([String? city]) async {
     LatLong cityPosition = (lat: 0, lon: 0);
     if(city == null || city == ''){

@@ -11,7 +11,7 @@ import '../../domain/entities/weather.dart';
 final dioClientProvider = Provider<DioClient>((ref) {
   return DioClient();
 });
-final weatherServiceProvider = Provider<WeatherService>((ref) {
+final weatherServiceProvider = Provider<IWeatherService>((ref) {
   final dio = ref.read(dioClientProvider);
   return WeatherService(dio);
 
@@ -22,7 +22,7 @@ AsyncNotifierProvider<WeatherNotifier, Forecast>(
     WeatherNotifier.new);
 
 class WeatherNotifier extends AsyncNotifier<Forecast> {
-  late final WeatherService _service;
+  late final IWeatherService _service;
 
   @override
   FutureOr<Forecast> build() async {
