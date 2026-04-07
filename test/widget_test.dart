@@ -19,6 +19,12 @@ class _FakeWeatherService implements IWeatherService {
 
   @override
   Future<Forecast> getTodayWeatherDetail([String? city]) async => forecast;
+
+  @override
+  Future<LatLong> getCityCoordinates(String city) {
+    // TODO: implement getCityCoordinates
+    throw UnimplementedError();
+  }
 }
 
 Forecast _forecastWithOneItem() {

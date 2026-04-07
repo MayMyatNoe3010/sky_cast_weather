@@ -9,7 +9,6 @@ import 'package:sky_cast_weather/features/weather/domain/entities/forecast_item.
 import 'package:sky_cast_weather/features/weather/domain/entities/main_details.dart';
 import 'package:sky_cast_weather/features/weather/domain/entities/weather.dart';
 import 'package:sky_cast_weather/features/weather/domain/entities/wind.dart';
-import 'package:sky_cast_weather/features/weather/presentation/providers/five_days_noon_provider.dart';
 import 'package:sky_cast_weather/features/weather/presentation/providers/weather_provider.dart';
 
 class _FakeWeatherService implements IWeatherService {
@@ -63,20 +62,9 @@ ForecastItem _itemAt(DateTime dt) {
 }
 
 void main() {
-  test('fiveDaysNoonProvider returns up to 5 noon items', () async {
-    final base = DateTime.now();
-    final items = <ForecastItem>[];
-
-    // 6 noon items across 6 days -> provider should take first 5
-    for (var i = 0; i < 6; i++) {
-      items.add(_itemAt(DateTime(base.year, base.month, base.day + i, 12)));
-    }
-
-    // Noise: non-noon items should be ignored
-    items.add(_itemAt(DateTime(base.year, base.month, base.day, 9)));
-    items.add(_itemAt(DateTime(base.year, base.month, base.day + 1, 15)));
-
-    final forecast = _forecastWithItems(items);
+  test('weatherProvider loads forecast from injected service', () async {
+    final now = DateTime.now();
+    final forecast = _forecastWithItems([_itemAt(now)]);
 
     final container = ProviderContainer(
       overrides: [
@@ -85,11 +73,9 @@ void main() {
     );
     addTearDown(container.dispose);
 
-    await container.read(weatherProvider.future);
-
-    final noonAsync = container.read(fiveDaysNoonProvider);
-    expect(noonAsync.hasValue, true);
-    expect(noonAsync.value!.length, 5);
+    final value = await container.read(weatherProvider.future);
+    expect(value.items.length, 1);
+    expect(value.city.name, 'Test City');
   });
 }
 

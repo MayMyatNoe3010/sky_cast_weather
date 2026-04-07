@@ -15,6 +15,7 @@ import '../../domain/entities/weather.dart';
 typedef LatLong = ({double lat, double lon});
 
 abstract class IWeatherService {
+  Future<LatLong> getCityCoordinates(String city);
   Future<Forecast> getTodayWeatherDetail([String? city]);
 }
 
@@ -22,6 +23,8 @@ class WeatherService implements IWeatherService {
   final openWeatherApiKey = dotenv.env['OPENWEATHER_APIKEY'];
   final DioClient dioClient;
   WeatherService(this.dioClient);
+
+  @override
   Future<LatLong> getCityCoordinates(String city) async {
     final response = await dioClient.get(
       APIConstants.geoLocation,
